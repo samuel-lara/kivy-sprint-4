@@ -30,7 +30,8 @@ class DrawerList(ThemableBehavior, MDList):
                 item.text_color = self.theme_cls.text_color
                 break
         instance_item.text_color = self.theme_cls.primary_color
-        
+
+# Esta clase es la clase que se encarga de las acciones que va a realizar el buscador.
 class SearchE4(MDTextField): 
     def calc(self, item):
         # Variable que utilizaremos para acceder a la applicacion que esta ejecutada.
