@@ -1,0 +1,4 @@
+{
+    "materialkv.pythonFile": "main.py",
+    "python.formatting.provider": "black"
+}
