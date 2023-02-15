@@ -33,7 +33,7 @@ class DrawerList(ThemableBehavior, MDList):
         
 class SearchE4(MDTextField): 
     def calc(self, item):
-        print(item)
+        # Variable que utilizaremos para acceder a la applicacion que esta ejecutada.
         app = MDApp.get_running_app()
         script_location = Path(__file__).absolute().parent #indicamos donde se encuentra el archivo actual
         with open(script_location / "tareas.json","rt") as json_file: #abre el archivo en modo texto, en este caso el json de donde sacamos los datos
@@ -41,55 +41,44 @@ class SearchE4(MDTextField):
             
         # Filtramos los datos según el texto de búsqueda
         search_results = [search_text for search_text in data3 if item.lower() in search_text['name'].lower()]
-        print(search_results)
 
         # Actualizamos la lista de resultados de búsqueda en la interfaz de usuario
-        search_results_list = app.root()
-        print(search_results_list)
+        search_results_list = app.getTaresScreen()
+        # Borramos todos los elementos de la lista
         search_results_list.clear_widgets()
 
         for result in search_results:
             search_results_list.add_widget(
-                OneLineIconListItem( #método que nos deja trabajar con 3 lineas que previamente lo hemos importado en la parte superior
+                OneLineIconListItem( #método que nos deja trabajar con 1 linea que previamente lo hemos importado en la parte superior
                     IconLeftWidget( #método que nos permite agregar un icono
                         icon="table"
                     ),
                     
                     id = f"Tarea {result['id']}",
                     text = f"Tarea {result['name']}",
-                    secondary_text=f"Descripcion {result['descripcion']}", #línea 2
+                    secondary_text=f"Descripcion {result['descripcion']}",
                 )
             )
-            
-            # self.clear_widgets() #borramos todos los widgets del widget de texto
-            
-            # self.add_widget( #añade widgets, despues de ids. va el id con el que podremos trabajar en el documento .kv
-            #     OneLineIconListItem( #método que nos deja trabajar con 3 lineas que previamente lo hemos importado en la parte superior
-            #         IconLeftWidget( #método que nos permite agregar un icono
-            #             icon="table"
-            #         ),
-                    
-            #         id = f"Tarea {i['id']}",
-            #         text = f"Tarea {i['name']}",
-            #         secondary_text=f"Descripcion {i['descripcion']}", #línea 2
-            #     )
-            # )## Lista que muestra los cuestionarios
-            
-            # if name == item: #comprovamos si id es igual a id_tasca
-            #     break   #si los valores son iguales generamos un break en la ejecución del código
 
 
-class MyApp (MDApp):    
+class MainApp (MDApp):  
+    
+    # Variable global que contendrá self.root
+    sm = None
+      
     def build(self):
+        
         self.title = "PymeShield"
         if platform in ['win', 'linux', 'macosx']:
             Window.size = (400, 600)
         else:
             Window.size = (400, 600)
         
-        return Builder.load_file("main2.kv")
-    def root(self):
-        self.sm = self.root.ids.tareas
+        self.sm = self.root
+       
+    # Método que utilizaremos para situarnos en la screen de tareas mediante id.
+    def getTaresScreen(self):
+        return self.sm.ids.tareas
         
     id_tasca = "" #creamos una variable vacia
     def detalles(self,row): #inicializamos una función con el parametro row
@@ -183,4 +172,6 @@ class MyApp (MDApp):
                 )
             )## Lista que muestra los cuestionarios
             
-MyApp().run()
+if __name__ == '__main__':
+    app = MainApp()
+    app.run()
