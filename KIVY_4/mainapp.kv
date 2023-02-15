@@ -51,10 +51,22 @@ MDScreen:
             MDScreen:
                 name: "Presupuesto"
                 MDBoxLayout:
-                    padding:0, 70, 0, 0
+                    orientation: 'vertical'
+                    
                     MDScrollView:
                         MDList:
-                            id: presupuesto  
+                            id: presupuesto 
+                             
+                        MDTextField:
+                            id: search_box
+                            hint_text: "Buscar..."
+                            size_hint_x: 0.8
+                            pos_hint: {'center_x': 0.5}
+
+                        MDList:
+                            id: search_results
+                            size_hint_y: 0.8
+                            pos_hint: {'center_x': 0.5}
             
             MDScreen:
                 name: "DetallesPresupuesto"
