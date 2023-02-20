@@ -28,6 +28,8 @@ MDScreen:
                         id: search_item
                         hint_text: "Buscar..."
                         halign: "center"
+                        size_hint_x: 0.8
+                        pos_hint: {'center_x': 0.5}
                         on_text: self.calc(self.text)
                     MDScrollView:
                         MDList:
@@ -51,20 +53,19 @@ MDScreen:
             MDScreen:
                 name: "Presupuesto"
                 MDBoxLayout:
+                    padding:0, 70, 0, 0
                     orientation: 'vertical'
                     
-                    MDScrollView:
-                        MDList:
-                            id: presupuesto 
-                             
-                        MDTextField:
-                            id: search_box
-                            hint_text: "Buscar..."
-                            size_hint_x: 0.8
-                            pos_hint: {'center_x': 0.5}
+                    SearchE4: #sería igual a poner MDBoxLayout
+                        id: search_item
+                        hint_text: "Buscar..."
+                        size_hint_x: 0.8
+                        pos_hint: {'center_x': 0.5}
+                        on_text: self.filterBudget(self.text) #llama a la función filterBudget y va actualizando el texto del widget
 
+                    MDScrollView: 
                         MDList:
-                            id: search_results
+                            id: presupuesto
                             size_hint_y: 0.8
                             pos_hint: {'center_x': 0.5}
             

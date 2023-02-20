@@ -1,16 +1,16 @@
 [{
     "id": 0,
     "name": "Tasca 1",
-    "descripcion": "texttexttexttexttexttexttexttexttext"
+    "descripcion": "Descripcio tasca 1"
 },
 {
     "id": 1,
     "name": "Tasca 2",
-    "descripcion": "texttexttexttexttexttexttexttexttexttexttexttexttexttext"
+    "descripcion": "Descripcio tasca 2"
 },
 {
     "id": 2,
     "name": "Tasca 3",
-    "descripcion": "texttexttexttexttexttexttexttexttexttext"
+    "descripcion": "Descripcio tasca 3"
 }
 ]

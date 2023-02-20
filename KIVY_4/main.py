@@ -33,15 +33,15 @@ class DrawerList(ThemableBehavior, MDList):
 
 # Esta clase es la clase que se encarga de las acciones que va a realizar el buscador.
 class SearchE4(MDTextField): 
+    # Variable que utilizaremos para acceder a la applicacion que esta ejecutada.
+    app = MDApp.get_running_app()
     def calc(self, item):
-        # Variable que utilizaremos para acceder a la applicacion que esta ejecutada.
-        app = MDApp.get_running_app()
-        script_location = Path(__file__).absolute().parent #indicamos donde se encuentra el archivo actual
-        with open(script_location / "tareas.json","rt") as json_file: #abre el archivo en modo texto, en este caso el json de donde sacamos los datos
-            data3 = json.load(json_file) #guardamos en una variable los datos del json cargados
+        
+        #variable que guarda el resultado el método getTareasData()
+        dataTareas = app.getTareasData()
             
         # Filtramos los datos según el texto de búsqueda
-        search_results = [search_text for search_text in data3 if item.lower() in search_text['name'].lower()]
+        search_results = [search_text for search_text in dataTareas if item.lower() in search_text['name'].lower()]
 
         # Actualizamos la lista de resultados de búsqueda en la interfaz de usuario
         search_results_list = app.getTaresScreen()
@@ -52,7 +52,7 @@ class SearchE4(MDTextField):
             search_results_list.add_widget(
                 OneLineIconListItem( #método que nos deja trabajar con 1 linea que previamente lo hemos importado en la parte superior
                     IconLeftWidget( #método que nos permite agregar un icono
-                        icon="table"
+                        icon="clipboard-list"
                     ),
                     
                     id = f"Tarea {result['id']}",
@@ -62,10 +62,42 @@ class SearchE4(MDTextField):
             )
 
 
+    def filterBudget(self, item):
+        
+        #variable que guarda el resultado el método getPresuData()
+        dataPresu = app.getPresuData()
+            
+        # Filtramos los datos según el texto de búsqueda
+        search_results = [search_text for search_text in dataPresu if item.lower() in search_text['name'].lower()]
+
+        # Actualizamos la lista de resultados de búsqueda en la interfaz de usuario
+        search_results_list = app.getBudgetsScreen()
+        # Borramos todos los elementos de la lista
+        search_results_list.clear_widgets()
+
+        for result in search_results:
+            search_results_list.add_widget(
+                OneLineIconListItem( #método que nos deja trabajar con 1 linea que previamente lo hemos importado en la parte superior
+                    IconLeftWidget( #método que nos permite agregar un icono
+                        icon="account-cash"
+                    ),
+                    
+                    text = f"Presupuesto {result['id']}",
+                    secondary_text=f"Nombre {result['name']}", 
+                    tertiary_text=f"Precio {result['preu']}", 
+                )
+            )
+
 class MainApp (MDApp):  
     
     # Variable global que contendrá self.root
     sm = None
+    # Variable global que contendrá les dades del JSON de presupostos
+    dataJsonPresu = None
+    # Variable global que contendrá les dades del JSON de tasques
+    dataJsonTask = None
+    #indicamos donde se encuentra el archivo actual
+    rutaPath = None
       
     def build(self):
         
@@ -75,24 +107,43 @@ class MainApp (MDApp):
         else:
             Window.size = (400, 600)
         
+        #variables globales utilatarias
         self.sm = self.root
+        self.rutaPath = script_location = Path(__file__).absolute().parent
+        
        
     # Método que utilizaremos para situarnos en la screen de tareas mediante id.
     def getTaresScreen(self):
         return self.sm.ids.tareas
+    
+    # Método que utilizaremos para situarnos en la screen de presupuesto mediante id.
+    def getBudgetsScreen(self):
+        return self.sm.ids.presupuesto
+    
+    #Método que utilizaremos para recoger los datos del Json de Tareas y guardarlos 
+    def getTareasData(self):
+        self.dataJsonTask = None
+        with open(self.rutaPath / "tareas.json","rt") as json_file: #abre el archivo en modo texto, en este caso el json de donde sacamos los datos
+            self.dataJsonTask = json.load(json_file) #guardamos en una variable los datos del json cargados
+        return self.dataJsonTask
+    
+    #Método que utilizaremos para recoger los datos del Json de Presupuestos y guardarlos 
+    def getPresuData(self):
+        self.dataJsonPresu = None
+        with open(self.rutaPath / "data.json","rt") as json_file: #abre el archivo en modo texto, en este caso el json de donde sacamos los datos
+            self.dataJsonPresu = json.load(json_file) #guardamos en una variable los datos del json cargados
+        return self.dataJsonPresu
         
     id_tasca = "" #creamos una variable vacia
     def detalles(self,row): #inicializamos una función con el parametro row
         id_tasca = row.id #le damos un valor a id_tasca que recuperamos del parametro de la función
         print(f"Pressed {row.id}") #imprimimos el valor
         self.root.ids['screen_manager'].current = "DetallesTarea" #instruccion donde ruteamos con la pantalla que ha de verse
-        script_location = Path(__file__).absolute().parent #indicamos donde se encuentra el archivo actual
-        with open(script_location / "tareas.json","rt") as json_file: #abre el archivo en modo texto, en este caso el json de donde sacamos los datos
-            data2 = json.load(json_file) #guardamos en una variable los datos del json cargados
+        dataTareas = self.getTareasData()
         id_tasca = row.id[5:] #asignamos un valor a id_tasca accediendo con el parametro row y con id que es un campo del json
         print(id_tasca) #imprimos el valor de id_tasca
 
-        for i in data2: #recorremos los valores de la variable data2 que guarda los datos del json
+        for i in dataTareas: #recorremos los valores de la variable data2 que guarda los datos del json
             id = i['id'] #asignamos el nuevo valos a la variable id
             text= f"{i['name']} - {i['descripcion']}" #asignamos un nuevo valor a la variable text recuperando datos del archivo json
 
@@ -106,13 +157,11 @@ class MainApp (MDApp):
         id_presupost = row.id
         print(f"Pressed {row.id}")
         self.root.ids['screen_manager'].current = "DetallesPresupuesto"
-        script_location = Path(__file__).absolute().parent 
-        with open(script_location / "data.json","rt") as json_file:
-            data = json.load(json_file)
+        dataPresu = self.getPresuData()
         id_presupost = row.id[10:]
         print(id_presupost)
 
-        for i in data:
+        for i in dataPresu:
             id = i['id']
             text= f"{i['name']} - {i['preu']} - {i['data']}"
 
@@ -129,17 +178,13 @@ class MainApp (MDApp):
 
     def on_start(self): #creamos la clase on_start
         #sirve para que cargue bien el json desde cualquier directorio
-        script_location = Path(__file__).absolute().parent 
-        # Cargamos los datos desde el archivo data.json
-        with open(script_location / "data.json","rt") as json_file:
-            data = json.load(json_file)
+        dataTareas = self.getTareasData()
 
-        with open(script_location / "tareas.json","rt") as json_file:
-            data2 = json.load(json_file)
+        dataPresu = self.getPresuData()
 
         #print(data)
                 
-        for i in data: #bucle que recorre el rango que le pasemos como parametro
+        for i in dataPresu: #bucle que recorre el rango que le pasemos como parametro
             self.root.ids.presupuesto.add_widget( #añade widgets, despues de ids. va el id con el que podremos trabajar en el documento .kv
                 ThreeLineIconListItem( #método que nos deja trabajar con 3 lineas que previamente lo hemos importado en la parte superior
                     IconLeftWidget( #método que nos permite agregar un icono
@@ -159,11 +204,11 @@ class MainApp (MDApp):
     
         #print(data)
                 
-        for i in data2: #bucle que recorre el rango que le pasemos como parametro
+        for i in dataTareas: #bucle que recorre el rango que le pasemos como parametro
             self.root.ids.tareas.add_widget( #añade widgets, despues de ids. va el id con el que podremos trabajar en el documento .kv
                 ThreeLineIconListItem( #método que nos deja trabajar con 3 lineas que previamente lo hemos importado en la parte superior
                     IconLeftWidget( #método que nos permite agregar un icono
-                        icon="table"
+                        icon="clipboard-list"
                     ),
                     
                     id = f"Tarea {i['id']}",
